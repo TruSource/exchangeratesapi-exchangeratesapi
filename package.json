@@ -1,0 +1,25 @@
+{
+  "name": "evm-oracle",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "scripts": {
+    "start": "trusource-server --spec ./server/oas.json",
+    "lint": "npx solhint 'contracts/**/*.sol'",
+    "test": "truffle test"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.0.35",
+    "@trusource/server": "^0.1.12",
+    "@trusource/solidity-cbor": "^0.1.5",
+    "dotenv": "^8.2.0",
+    "web3-providers-ws": "^1.2.7"
+  },
+  "devDependencies": {
+    "cbor": "^5.0.2",
+    "solhint": "^3.0.0",
+    "truffle-assertions": "^0.9.1",
+    "web3-eth-abi": "^1.2.7"
+  },
+  "author": "TruSource, Inc.",
+  "license": "MIT"
+}
