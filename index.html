@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang=en>
+   <head>
+      <meta charset=utf-8>
+      <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1">
+      <title>exchangeratesapi exchangeratesapi Oracle Documentation</title>
+      <link href=stylesheets/screen.css rel=stylesheet media=screen>
+      <link href=stylesheets/print.css rel=stylesheet media=print>
+      <link href=stylesheets/highlight-monokai.css rel=stylesheet media=screen,print>
+      <script src=javascripts/all.js type=text/javascript></script>
+   </head>
+   <body class="" data-languages="[&#34;javascript&#34;]">
+      <a href=# id=nav-button>
+         <span> <img alt=navbar class=navbar src=images/navbar.png></span>
+      </a>
+      <div class=tocify-wrapper>
+         <div class="logoc">
+            <img alt=logo class=logo src=images/logo.png>
+         </div>
+         <div class=search>
+            <input type=text class=search id=input-search placeholder="Search">
+         </div>
+         <ul class=search-results></ul>
+         <div id=toc></div>
+         <ul class=toc-footer>
+            <li><a href='https://exchangeratesapi.io/'>exchangeratesapi exchangeratesapi API Docs</a></li>
+         </ul>
+      </div>
+      <div class=page-wrapper>
+         <div class=dark-box></div>
+         <div class=content>
+            <h1 id="exchangeratesapi-exchangeratesapi-oracle-docs">exchangeratesapi exchangeratesapi Oracle Docs</h1>
+            <pre class="highlight javascript"><code>pragma solidity ^<span class="hljs-number">0.5</span><span class="hljs-number">.0</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"./OracleAPI.sol"</span>;
+
+<span class="hljs-comment">/**
+ * @title Example contract using exchangeratesapi oracle
+ * @author TruSource
+ * @notice Example contract using exchangeratesapi oracle
+ * @dev Demonstrates usage of OracleAPI and building queryParams
+ */</span>
+contract Example is OracleAPI {
+    event LogResult(bytes32 queryId, Oracle.Oracle.Operations operationId, uint256 statusCode, string result);
+
+    <span class="hljs-keyword">constructor</span>(address resolverAddress) public OracleAPI (resolverAddress) public {}
+
+    <span class="hljs-comment">/**
+     * @notice Make getHistory query
+     * @dev Make getHistory query, queryId is returned to be used to handle query result
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getHistory</span>(<span class="hljs-params"></span>) <span class="hljs-title">external</span> </span>{
+        Buffer.buffer memory optionalQueryParams = createBuffer();
+
+        <span class="hljs-comment">// Optional</span>
+        addString(optionalQueryParams, <span class="hljs-string">"end_at"</span>, <span class="hljs-string">"2018-09-01"</span>);
+        addString(optionalQueryParams, <span class="hljs-string">"start_at"</span>, <span class="hljs-string">"2018-01-01"</span>);
+        addString(optionalQueryParams, <span class="hljs-string">"symbols"</span>, <span class="hljs-string">"ILS,JPY"</span>);
+
+        trusource_getHistory(optionalQueryParams);
+    }
+
+    <span class="hljs-comment">/**
+     * @dev Handle query result using queryId, operationId and statusCode
+     * @param queryId unique id for query
+     * @param operationId id for operation
+     * @param statusCode HTTP response status code
+     * @param result query result
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trusource_callback</span>(<span class="hljs-params">
+        bytes32 queryId,
+        Oracle.Oracle.Operations operationId,
+        uint256 statusCode,
+        string calldata result
+    </span>) <span class="hljs-title">external</span> <span class="hljs-title">checkAddress</span> <span class="hljs-title">checkQueryId</span>(<span class="hljs-params">queryId</span>) </span>{
+        <span class="hljs-keyword">if</span> (operationId == Oracle.Oracle.Operations.getHistory) {
+            emit LogResult(queryId, operationId, statusCode, result);
+            <span class="hljs-keyword">return</span>;
+        }
+    }
+}</code></pre>
+            <p>exchangeratesapi have partnered with TruSource to provide users with data on the Ethereum blockchain. Users can access data from exchangeratesapi endpoints detailed in these docs by signing up for exchangeratesapi via the <a href="https://app.trusource.io">TruSource website</a>.</p>
+            <h3 id="dependencies">Dependencies</h3>
+            <p>Before starting ensure the following requirements are met.</p>
+            <ul>
+               <li>Node.js v8.9.4 (required) / v10.5.0+ (recommended)</li>
+               <li>Truffle v5.0.0+</li>
+               <li><a href="https://www.trufflesuite.com/ganache">Ganache</a> or <a href="https://www.npmjs.com/package/ganache-cli">ganache-cli</a></li>
+            </ul>
+            <h3 id="example-project">Example Project</h3>
+            <p>To start, clone the <a href="https://github.com/TruSource/exchangeratesapi-exchangeratesapi">exchangeratesapi example truffle project</a>. Alternatively use the exchangeratesapi truffle box, ensure you are in a new and empty directory and run the following</p>
+            <p><code>truffle unbox TruSource/exchangeratesapi-exchangeratesapi</code></p>
+            <p>Looking at the project, the contract, <strong>Example.sol</strong>, demonstrates the usage of the operations exposed by the <strong>oracleAPI.sol</strong>. A reduced version of <strong>Example.sol</strong> is shown on the right, the <strong>getHistory</strong> function uses the getHistory operation by calling the <strong>trusource_getHistory</strong> function defined in <strong>OracleAPI.sol</strong>.</p>
+            <h3 id="do-it-yourself">Do it Yourself</h3>
+            <p>When writing a contract that uses the exchangeratesapi oracle, several important conditions have to be met.</p>
+            <p>Firstly, the contract should inherit the <strong>OracleAPI</strong>.</p>
+            <p><code>contract Example is OracleAPI</code></p>
+            <p>The constructor should accept a resolver address argument which is passed to the base contract using a <strong>OracleAPI</strong> modifier.</p>
+            <p><code>constructor(address resolverAddress) OracleAPI (resolverAddress) public {}</code></p>
+            <p>The contract must then implement a <strong>trusource_callback</strong> method.</p>
+            <p><code>function trusource_callback(bytes32 queryId, Oracle.Oracle.Operations operationId, uint256 statusCode, string calldata result) external checkAddress checkQueryId(queryId)</code></p>
+            <p>The implementation should use the <strong>checkAddress</strong> and <strong>checkQueryId(queryId)</strong> modifiers.</p>
+            <h2 id="callback-function">Callback Function</h2>
+            <p>The <strong>trusource_callback</strong> method is called by TruSource, with the query return passed as one of the arguments.</p>
+            <p><code>trusource_callback(bytes32 queryId, Oracle.Oracle.Operations operationId, uint256 statusCode, string calldata result) external checkAddress checkQueryId(queryId)</code></p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Description</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>queryId</td>
+                     <td>Unique id to identify each query</td>
+                  </tr>
+                  <tr>
+                     <td>operationId</td>
+                     <td>Unique id to identify each operation</td>
+                  </tr>
+                  <tr>
+                     <td>statusCode</td>
+                     <td>HTTP status code</td>
+                  </tr>
+                  <tr>
+                     <td>result</td>
+                     <td>API call response as string</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h2 id="optional-query-parameters">Optional Query Parameters</h2>
+            <pre class="highlight javascript"><code><span class="hljs-comment">/**
+ * @notice Make getHistory query
+ * @dev Make getHistory query, queryId is returned to be used to handle query result
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getHistory</span>(<span class="hljs-params"></span>) <span class="hljs-title">external</span> </span>{
+    Buffer.buffer memory optionalQueryParams = createBuffer();
+
+    <span class="hljs-comment">// Optional</span>
+    addString(optionalQueryParams, <span class="hljs-string">"end_at"</span>, <span class="hljs-string">"2018-09-01"</span>);
+    addString(optionalQueryParams, <span class="hljs-string">"start_at"</span>, <span class="hljs-string">"2018-01-01"</span>);
+    addString(optionalQueryParams, <span class="hljs-string">"symbols"</span>, <span class="hljs-string">"ILS,JPY"</span>);
+
+    trusource_getHistory(optionalQueryParams);
+}</code></pre>
+            <p>Some operations will allow for optional query parameters. <a href="https://github.com/ensdomains/buffer">Mutable byte buffers</a> are used and query parameter keys and values are CBOR encoded using the <a href="https://github.com/smartcontractkit/solidity-cborutils">solidity-cborutils</a> library.</p>
+            <p>Use the <code>addString</code> or <code>addUInt</code> helpers to construct the query parameter buffer.</p>
+            <p>For example, lets assume the getHistory operation allows optional query parameters. To construct the query parameters <strong><em>?end_at=2018-09-01&amp;start_at=2018-01-01&amp;symbols=ILS,JPY</em></strong>, first initialise a buffer variable.</p>
+            <p><code>Buffer.buffer memory queryParams = createBuffer();</code></p>
+            <p>Then add the keys and values.</p>
+            <p><code>addString(queryParams, &quot;end_at&quot;, &quot;2018-09-01&quot;);</code></p>
+            <p><code>addString(queryParams, &quot;start_at&quot;, &quot;2018-01-01&quot;);</code></p>
+            <p><code>addString(queryParams, &quot;symbols&quot;, &quot;ILS,JPY&quot;);</code></p>
+            <h2 id="options-string">Options String</h2>
+            <p>An options string can be passed along with a call to every operation. The format of the string is as follows</p>
+            <p><code>identifier/options</code></p>
+            <p>The following identifiers are currently supported.</p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>identifier</th>
+                     <th>Description</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>json</td>
+                     <td>Parse json response</td>
+                  </tr>
+                  <tr>
+                     <td>fixedNum</td>
+                     <td>reformat floating point return as fixed number</td>
+                  </tr>
+               </tbody>
+            </table>
+            <p>Multiple options can be specified. For example, both response parsing and a fixed number response:</p>
+            <p><code>json/parse.json.response/fixedNum/4</code></p>
+            <h3 id="response-parsing">Response Parsing</h3>
+            <blockquote>
+               <p>Example response</p>
+            </blockquote>
+            <pre class="highlight json"><code>{
+  <span class="hljs-attr">"posts"</span>: [
+    {
+      <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-attr">"title"</span>: <span class="hljs-string">"hello"</span>,
+      <span class="hljs-attr">"rating"</span>: <span class="hljs-number">4.75</span>
+    }
+  ],
+  <span class="hljs-attr">"profile"</span>: {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"typicode"</span>
+  }
+}</code></pre>
+            <p>This is useful when an operation returns a json response and a single value is required in the contract. Take the example response on the right as an example.</p>
+            <p>Assuming the title of the first post is required, the option string would be constructed as</p>
+            <p><code>json/posts.0.title</code></p>
+            <h3 id="fixed-point-number-response">Fixed point number response</h3>
+            <p>Solidity does not yet support floating point numbers, fixed point number representations are commonly used instead within smart contracts. When constructing the string pass an integer to represent decimal multiplier.</p>
+            <p>For example, if the following options string was used for the example response (4.75)</p>
+            <p><code>json/posts.0.rating/fixedNum/2</code></p>
+            <p>The response would be <code>&quot;475&quot;</code>. The <code>parseInt</code> can then be used to parse the <code>string</code> as a <code>uint256</code>.</p>
+            <h1 id="local-testing">Local Testing</h1>
+            <p>The exchangeratesapi example and any user projects using the exchangeratesapi oracle can be tested locally with a local server that can mimic the TruSource servers that will fetch and respond with data to contracts running on local ganache blockchains.</p>
+            <ol>
+               <li>
+                  <p>Start an Ethereum client. We will use <code>ganache-cli</code>.</p>
+                  <p><code>npx ganache-cli</code></p>
+                  <p>Note: the client needs to support WebSockets (do not use <code>truffle develop</code> for this reason).</p>
+                  <p>For other options, see <a href="https://www.trufflesuite.com/docs/truffle/reference/choosing-an-ethereum-client">Truffle - Choosing an Ethereum client</a>.</p>
+               </li>
+               <li>
+                  <p>Migrate the smart contracts, in a 2nd terminal</p>
+                  <p><code>truffle migrate</code></p>
+               </li>
+               <li>
+                  <p>Start the TruSource local server. It will listen for events, fetch and return data to requesting contracts.</p>
+                  <p><code>npm start</code></p>
+               </li>
+               <li>
+                  <p>Using the provided Truffle script <code>./server/calls.js</code>, call functions in <code>Example.sol</code>. This will execute a set of contracts calls, testing each operation with provided example arguments. In a 3rd terminal</p>
+                  <p><code>truffle exec server/calls.js</code></p>
+               </li>
+            </ol>
+            <h1 id="network-testing">Network Testing</h1>
+            <blockquote>
+               <p>ropsten migrations</p>
+            </blockquote>
+            <pre class="highlight javascript"><code><span class="hljs-keyword">const</span> yourContract = artifacts.require(<span class="hljs-string">"yourContract"</span>);
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function">(<span class="hljs-params">deployer, network</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (network === <span class="hljs-string">"ropsten"</span>) {
+    <span class="hljs-keyword">const</span> resolverAddress = <span class="hljs-string">"0x0e20f5f1919435e3ac1d83b2ee03b5b2ea8ca2c1"</span>;
+    deployer.deploy(yourContract, resolverAddress);
+  }
+};</code></pre>
+            <table>
+               <thead>
+                  <tr>
+                     <th>network</th>
+                     <th>Resolver Address</th>
+                     <th>Oracle Address</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>ropsten</td>
+                     <td>0x0e20f5f1919435e3ac1d83b2ee03b5b2ea8ca2c1</td>
+                     <td>0xbefbe2cca474145b29608f4f7ed860c916ede27a</td>
+                  </tr>
+               </tbody>
+            </table>
+            <p>The exchangeratesapi oracle is currently deployed on the networks shown in the table.</p>
+            <p>To use the exchangeratesapi oracle on a given network, you must deploy your contract and provide the <strong>resolver address</strong> as a constructor argument.</p>
+            <p>For all contract calls that make a call to the exchangeratesapi oracle, Trusource will make a call to the <code>trusource_callback</code> function in your contract with the result.</p>
+            <p>The truffle migrations for <strong>ropsten</strong> is demonstrated.</p>
+            <p>To deploy your contract to a live network, update the migrations as shown, a do the following within the exchangeratesapi truffle box:</p>
+            <ol>
+               <li>
+                  <p>Uncomment line 4 to 12 in <code>truffle-config.js</code>.</p>
+               </li>
+               <li>
+                  <p>Set the <code>SEED_PHRASE</code> (mnemonic) and <code>ETHEREUM_RPC_URL</code> environment variables in <code>.env</code>.</p>
+               </li>
+               <li>
+                  <p>Migrate the contracts.</p>
+                  <p><code>truffle migrate --network &lt;network-name&gt;</code></p>
+               </li>
+               <li>
+                  <p>Whitelist the contract that will call the exchangeratesapi API at <a href="https://app.trusource.io">trusource.io</a>.</p>
+               </li>
+            </ol>
+            <h1 id="operations">Operations</h1>
+            <h2 id="gethistory">getHistory</h2>
+            <pre class="highlight javascript"><code><span class="hljs-comment">/**
+ * @notice Make getHistory query
+ * @dev Make getHistory query, queryId is returned to be used to handle query result
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getHistory</span>(<span class="hljs-params"></span>) <span class="hljs-title">external</span> </span>{
+    Buffer.buffer memory optionalQueryParams = createBuffer();
+
+    <span class="hljs-comment">// Optional</span>
+    addString(optionalQueryParams, <span class="hljs-string">"end_at"</span>, <span class="hljs-string">"2018-09-01"</span>);
+    addString(optionalQueryParams, <span class="hljs-string">"start_at"</span>, <span class="hljs-string">"2018-01-01"</span>);
+    addString(optionalQueryParams, <span class="hljs-string">"symbols"</span>, <span class="hljs-string">"ILS,JPY"</span>);
+
+    trusource_getHistory(optionalQueryParams);
+}</code></pre>
+            <h3 id="oracleapi-method">OracleAPI Method</h3>
+            <p><code>trusource_getHistory()</code></p>
+            <p><code>trusource_getHistory(string memory options)</code></p>
+            <p><code>trusource_getHistory(Buffer.buffer memory optionalQueryParams)</code></p>
+            <p><code>trusource_getHistory(Buffer.buffer memory optionalQueryParams, string memory options)</code></p>
+            <h3 id="operation-query-parameters">Operation Query Parameters</h3>
+            <p>Optional query parameters need to be CBOR encoded and be passed as a bytes array. See <a href="#optional-query-parameters">optional query parameters</a> for more details.</p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Required</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>end_at</td>
+                     <td>false</td>
+                  </tr>
+                  <tr>
+                     <td>start_at</td>
+                     <td>false</td>
+                  </tr>
+                  <tr>
+                     <td>symbols</td>
+                     <td>false</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h3 id="options">Options</h3>
+            <p>An options string can be provided, see <a href="#options-string">options string</a> for more details.</p>
+            <h2 id="getlatest">getLatest</h2>
+            <pre class="highlight javascript"><code><span class="hljs-comment">/**
+ * @notice Make getLatest query
+ * @dev Make getLatest query, queryId is returned to be used to handle query result
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLatest</span>(<span class="hljs-params"></span>) <span class="hljs-title">external</span> </span>{
+    Buffer.buffer memory optionalQueryParams = createBuffer();
+
+    <span class="hljs-comment">// Optional</span>
+    addString(optionalQueryParams, <span class="hljs-string">"symbols"</span>, <span class="hljs-string">"USD,GBP"</span>);
+
+    trusource_getLatest(optionalQueryParams);
+}</code></pre>
+            <h3 id="oracleapi-method-1">OracleAPI Method</h3>
+            <p><code>trusource_getLatest()</code></p>
+            <p><code>trusource_getLatest(string memory options)</code></p>
+            <p><code>trusource_getLatest(Buffer.buffer memory optionalQueryParams)</code></p>
+            <p><code>trusource_getLatest(Buffer.buffer memory optionalQueryParams, string memory options)</code></p>
+            <h3 id="operation-query-parameters-1">Operation Query Parameters</h3>
+            <p>Optional query parameters need to be CBOR encoded and be passed as a bytes array. See <a href="#optional-query-parameters">optional query parameters</a> for more details.</p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Required</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>symbols</td>
+                     <td>false</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h3 id="options-1">Options</h3>
+            <p>An options string can be provided, see <a href="#options-string">options string</a> for more details.</p>
+            <h1 id="oracleapi">OracleAPI</h1>
+            <p>Helper functions enabling the use of optional query parameters for some operations and response parsing are provided.</p>
+            <h2 id="addint">addInt</h2>
+            <p>CBOR encode a string key and uint value pair and add to buffer.</p>
+            <p><code>addUint(Buffer.buffer memory param, string memory key, string memory value)</code></p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Description</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>param</td>
+                     <td>buffer object to which the encoded key and value will be added to</td>
+                  </tr>
+                  <tr>
+                     <td>key</td>
+                     <td>query parameter key of type string</td>
+                  </tr>
+                  <tr>
+                     <td>value</td>
+                     <td>query parameter value of type uint</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h2 id="addstring">addString</h2>
+            <p>CBOR encode a string key and string value pair and add to buffer.</p>
+            <p><code>addString(Buffer.buffer memory param, string memory key, string memory value)</code></p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Description</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>param</td>
+                     <td>buffer object to which the encoded key and value will be added to</td>
+                  </tr>
+                  <tr>
+                     <td>key</td>
+                     <td>query parameter key of type string</td>
+                  </tr>
+                  <tr>
+                     <td>value</td>
+                     <td>query parameter value of type string</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h2 id="parseint">parseInt</h2>
+            <p>Parse a the string response within <code>trusource_callback</code> as <code>uint256</code>.</p>
+            <p><code>parseInt(string memory str)</code></p>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Parameter</th>
+                     <th>Description</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>str</td>
+                     <td>string representation of uint</td>
+                  </tr>
+               </tbody>
+            </table>
+            <h2 id="createbuffer">createBuffer</h2>
+            <p>Initialises and returns buffer set to <code>defaultBufferSize</code> of 256.</p>
+            <p><code>createBuffer()</code></p>
+         </div>
+         <div class=dark-box>
+         </div>
+      </div>
+   </body>
+</html>
