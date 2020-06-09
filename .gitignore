@@ -1,0 +1,9 @@
+# Truffle build
+build/
+
+# npm
+node_modules/
+npm-debug.log
+
+# environment variables
+.env
