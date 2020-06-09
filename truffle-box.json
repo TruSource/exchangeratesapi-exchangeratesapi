@@ -1,0 +1,17 @@
+{
+  "ignore": [
+    ".gitignore",
+    ".solhint.json",
+    ".solhintignore"
+  ],
+  "commands": {
+    "Compile contracts": "truffle compile",
+    "Migrate contracts": "truffle migrate",
+    "Test contracts": "truffle test",
+    "Make test contract calls": "truffle exec server/calls.js",
+    "Start local test server": "npm start"
+  },
+  "hooks": {
+    "post-unpack": "npm install"
+  }
+}
